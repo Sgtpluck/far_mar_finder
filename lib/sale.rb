@@ -22,6 +22,7 @@ class Sale
 
 
   def self.all
+    # @sales_all ||= 
     CSV.read("./support/sales.csv").map do |array|
     Sale.new(array)
     end
@@ -29,7 +30,7 @@ class Sale
 
   def self.find(sale_id)
     all.find do |sale|
-      sale.sale_id.to_i == sale_id.to_i
+      sale.sale_id == sale_id.to_i
     end
   end
 

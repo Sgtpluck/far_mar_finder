@@ -2,7 +2,7 @@ class Market
   attr_accessor :market_id, :name, :address, :city, :county, :state, :zip
 
   def initialize(array)
-    @market_id = array[0]
+    @market_id = array[0].to_i
     @name = array[1]
     @address = array[2]
     @city = array[3]
@@ -11,15 +11,20 @@ class Market
     @zip = array[6]
   end
 
-  def self.all
-  #maybe load in CSV data
-  CSV.read("./support/markets.csv").map do |array|
+  def self.all #optimizing self.all with memoization
+    @markets_all ||= CSV.read("./support/markets.csv").map do |array|
     Market.new(array)
-    end
+  end
   end
 
-  def id
-    market_id.to_i
+  # def get_all
+  #   CSV.read("./support/markets.csv").map do |array|
+  #   Market.new(array)
+  #   end
+  # end
+
+  def id #this method is just to make sure the attribute test passes
+    market_id
   end
 
   def self.find(market_id)
