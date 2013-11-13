@@ -24,7 +24,7 @@ class Vendor
   #end definitions for rspec
 
   def self.all
-    CSV.read("./support/vendors.csv").map do |array|
+    @all_vendors ||= CSV.read("./support/vendors.csv").map do |array|
       Vendor.new(array)
     end
   end
