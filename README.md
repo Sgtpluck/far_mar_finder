@@ -88,18 +88,53 @@ See below for full description of methods to create.
 - `products` - returns a collection of `Product` instances that are associated with market by the `Product` `vendor_id` field.
 - `sales` - returns a collection of `Sale` instances that are associated with market by the `vendor_id` field.
 - `revenue` - returns the the sum of all of the vendor's sales (in cents)
+- `self.by_market(market_id)` - returns all of the vendors with the given `market_id`
 
 **Additional Product Methods**
 
 - `vendor` - returns the `Vendor` instance that is associated with this vendor using the `Product` `vendor_id` field
 - `sales` - returns a collection of `Sale` instances that are associated with market using the `Sale` `product_id` field.
 - `number_of_sales` - returns the number of times this product has been sold.
+- `self.by_vendor(vendor_id)` - returns all of the products with the given `vendor_id`
 
 **Additional Sale Methods**
 
 - `vendor` - returns the `Vendor` instance that is associated with this sale using the `Sale` `vendor_id` field
 - `product` - returns the `Product` instance that is associated with this sale using the `Sale` `product_id` field
 - `self.between(beginning_time, end_time)` - returns a collection of Sale objects where the purchase time is between the two times given as arguments
+
+
+**Extra Credit Methods**
+
+- `random` returns a random instance
+
+**Extra Credit Market Methods**
+
+- `products` returns a collection of `Product` instances that are associated to the market through the `Vendor` class.
+- `self.search(search_term)` returns a collection of `Market` instances where the market name or vendor name contain the `search_term`. For example `Market.search('school')` would return 3 results, one being the market with id 75 (Fox School Farmers Market).
+- `prefered_vendor` - returns the vendor with the highest revenue
+- `prefered_vendor(date)` - returns the vendor with the highest revenue for the given date
+- `worst_vendor` - returns the vendor with the lowest revenue
+- `worst_vendor(date)` - returns the vendor with the lowest revenue on the given date
+
+
+**Extra Credit Vendor Methods**
+
+- `self.most_revenue(n)` returns the top n vendor instances ranked by total revenue
+- `self.most_items(n)` returns the top n vendor instances ranked by total number of items sold
+- `self.revenue(date)` returns the total revenue for that date across all vendors
+- `revenue(range_of_dates)` returns the total revenue for that vendor across several dates
+- `revenue(date)` returns the total revenue for that specific purchase date
+
+**Extra Credit Product Methods**
+
+- `self.most_revenue(n)` returns the top n products instances ranked by total revenue
+- `best_day` returns a `Date` object with the most sales for the given product using the `Sale` purchase_time
+
+**Extra Credit Sale Methods**
+
+- `self.best_day` returns a `Date` object with the most sales overall.
+
 
 ### Testing
 
