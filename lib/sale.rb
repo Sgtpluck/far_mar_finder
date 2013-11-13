@@ -22,14 +22,16 @@ class Sale
 
 
   def self.all
-    @all_sales ||= CSV.read("./support/sales.csv").map do |array|
+    @sales_all ||= CSV.read("./support/sales.csv").map do |array|
+    CSV.read("./support/sales.csv").map do |array|
+>>>>>>> master
     Sale.new(array)
     end
   end
 
   def self.find(sale_id)
     all.find do |sale|
-      sale.sale_id.to_i == sale_id.to_i
+      sale.sale_id == sale_id.to_i
     end
   end
 

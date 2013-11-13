@@ -24,7 +24,7 @@ class Vendor
   #end definitions for rspec
 
   def self.all
-    @all_vendors ||= CSV.read("./support/vendors.csv").map do |array|
+    @vendors_all ||= CSV.read("./support/vendors.csv").map do |array|
       Vendor.new(array)
     end
   end
@@ -89,6 +89,16 @@ class Vendor
       sum += cents.to_i
     end
     return sum
+  end
+
+  
+  #how many and what kind of products a vendor sells.
+  def how_much_prod
+    prod_array = products
+    spec_prod = products.map do |products|
+      products.name
+    end
+    puts "This vendor sells #{prod_array.length} products. They are #{spec_prod.join(" and ")}"
   end
 
 end

@@ -36,7 +36,7 @@ describe Sale do
     end
 
     it "has the day 31" do
-      expect(sale.purchase_time.day).to eq 31
+      expect(sale.purchase_time.day).to eq 7
     end
 
     it "has the vendor_id 1" do

@@ -12,8 +12,7 @@ class Product
   end
 
   def self.all
-    @all_products ||= CSV.read("./support/products.csv").map do |array|
-      # puts array.inspect
+    @products_all ||= CSV.read("./support/products.csv").map do |array|
       Product.new(array)
       end
   end
