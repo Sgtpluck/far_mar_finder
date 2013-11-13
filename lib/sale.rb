@@ -20,7 +20,6 @@ class Sale
   end
   #end definitions for rspec
 
-
   def self.all
     @all_sales ||= CSV.read("./support/sales.csv").map do |array|
     Sale.new(array)

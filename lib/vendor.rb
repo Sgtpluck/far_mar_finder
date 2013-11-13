@@ -48,7 +48,7 @@ class Vendor
     end
   end
 
-  def self.by_market(market_id)
+  def self.by_market(market_id) #this method implemented to make rspec pass
     self.find_by_market(market_id)
   end
     
