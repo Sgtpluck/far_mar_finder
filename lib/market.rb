@@ -12,7 +12,6 @@ class Market
   end
 
   def self.all
-  #maybe load in CSV data
   @all_markets ||= CSV.read("./support/markets.csv").map do |array|
     Market.new(array)
     end
