@@ -88,12 +88,15 @@ See below for full description of methods to create.
 - `products` - returns a collection of `Product` instances that are associated with market by the `Product` `vendor_id` field.
 - `sales` - returns a collection of `Sale` instances that are associated with market by the `vendor_id` field.
 - `revenue` - returns the the sum of all of the vendor's sales (in cents)
+- `self.by_market(market_it)` - returns all of the vendors with the given `market_id`
+
 
 **Additional Product Methods**
 
 - `vendor` - returns the `Vendor` instance that is associated with this vendor using the `Product` `vendor_id` field
 - `sales` - returns a collection of `Sale` instances that are associated with market using the `Sale` `product_id` field.
 - `number_of_sales` - returns the number of times this product has been sold.
+- `self.by_vendor(vendor_id)` - returns all of the products with the given `vendor_id`
 
 **Additional Sale Methods**
 
