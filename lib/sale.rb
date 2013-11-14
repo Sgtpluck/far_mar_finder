@@ -20,6 +20,7 @@ class Sale
   end
   #end definitions for rspec
 
+  #class methods
   def self.all
     @all_sales ||= CSV.read("./support/sales.csv").map do |array|
     Sale.new(array)
@@ -62,6 +63,57 @@ class Sale
     end
   end
 
+  def self.sort_sales
+    @best ||= all.each do |sales|
+      sales.amount_cents
+    end
+    @best
+  end
+
+  def self.random
+    find(rand(0..12001))
+  end
+
+  def self.sales_by_vendor
+    @vendor_revenue ||= @vendor_revenue = {}
+    all.each do |sales|
+      if @vendor_revenue.include? sales.vendor_id
+        @vendor_revenue[sales.vendor_id]+=(sales.amount_cents)
+      elsif
+        @vendor_revenue[sales.vendor_id] = sales.amount_cents
+      end
+    end
+    @vendor_revenue.sort_by {|id, revenue|revenue/100}
+  end
+
+  def self.worst_sales(n)
+     sales_by_vendor.first(n)
+  end
+
+  def self.best_sales(n)
+    sales_by_vendor.last(n).reverse
+   end
+
+
+  def self.best_day
+    date_hash = {}
+    all.each do |sale|
+      sale.purchase_time = sale.purchase_time.to_s[0..9]
+      if date_hash.include? sale.purchase_time
+        date_hash[sale.purchase_time] += 1
+      else 
+        date_hash[sale.purchase_time] = 1
+      end
+    end
+    puts "The best day in terms of sales was #{date_hash.key(date_hash.values.max)}, when there were #{date_hash.values.max} sales."
+    return date_hash.values.max
+  end
+
+
+
+
+  #end of class methods
+
   def vendor
     Vendor.find(vendor_id)
   end
@@ -69,6 +121,7 @@ class Sale
   def product
     Product.find(product_id)
   end
+
 
   
 end

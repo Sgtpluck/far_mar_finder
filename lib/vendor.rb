@@ -64,6 +64,46 @@ class Vendor
     end
   end
 
+  def self.random
+    find(rand(0..2690))
+  end
+
+  def self.preferred_vendor
+    best_revenue(1)
+  end
+
+  def self.returning_market_ids(name)
+    find_all_by_name(name).collect do |vendors|
+      vendors.market_id
+    end
+  end
+
+  def self.best_revenue(n)
+    top_n_vendors = Sale.best_sales(n)
+    vend = top_n_vendors.collect {|vendor_pairs| find(vendor_pairs[0]).name}
+    rev = top_n_vendors.collect {|vendor_pairs| vendor_pairs[1] / 100}
+    if n == 1
+      puts "The best vendor is #{vend.join("")}."
+    else
+      puts "The top #{n} vendors are #{vend.join(" and ")}. They made, respectively, $#{rev.join(" and $")}"
+    end
+
+    return top_n_vendors
+  end
+
+  def self.least_revenue(n)
+    worst_n_vendors = Sale.worst_sales(n)
+    vend = worst_n_vendors.collect {|vendor_pairs| find(vendor_pairs[0]).name}
+    rev = worst_n_vendors.collect {|vendor_pairs| vendor_pairs[1] / 100}
+    if n != 1
+      puts "The worst #{n} vendors are #{vend.join(" and ")}. They made, respectively, $#{rev.join(" and $")}"
+    end
+    return worst_n_vendors
+  end
+
+
+  #end of class methods
+
   def market
     Market.find(market_id)
   end
@@ -89,6 +129,9 @@ class Vendor
       sum += cents.to_i
     end
     return sum
+  end
+
+  def preferred_vendor_by_date(date)
   end
 
 end
