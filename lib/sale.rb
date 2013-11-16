@@ -14,7 +14,6 @@ class Sale
     sale_id.to_i
   end
 
-
   def amount
     amount_cents
   end
@@ -22,95 +21,118 @@ class Sale
 
   #class methods
   def self.all
-    @all_sales ||= CSV.read("./support/sales.csv").map do |array|
-    Sale.new(array)
-    end
+    @all_sales ||= CSV.read("./support/sales.csv").map {|array| Sale.new(array) }
   end
 
   def self.find(sale_id)
-    all.find do |sale|
-      sale.sale_id.to_i == sale_id.to_i
-    end
+    all.find { |sale| sale.sale_id.to_i == sale_id.to_i }
   end
 
   def self.find_by_amount_cents(amount)
-    all.find do |sale|
-      sale.amount_cents.to_i == amount.to_i
-    end
+    all.find { |sale| sale.amount_cents.to_i == amount.to_i }
   end
 
   def self.find_all_by_product(product_id)
-    all.find_all do |sale|
-      sale.product_id.to_i == product_id.to_i
-    end
+    all.find_all { |sale| sale.product_id.to_i == product_id.to_i }
   end
 
   def self.find_by_vendor_id(vendor_id)
+    all.find_all { |sale| sale.vendor_id.to_i == vendor_id.to_i }
+  end
+
+  def self.find_by_date(purchase_time)
     all.find_all do |sale|
-      sale.vendor_id.to_i == vendor_id.to_i
+      sale.purchase_time.yday == set_time(purchase_time).yday
     end
   end
 
   def self.find_by_market_id(market_id)
-    all.find_all do |sale|
-      sale.market_id.to_i == market_id.to_i
-    end
+    all.find_all { |sale| sale.market_id.to_i == market_id.to_i }
   end
 
-  def self.between(beginning_time,end_time)
-    all.find_all do |sale|
-      (beginning_time..end_time).cover?Time.new(sale.purchase_time)
-    end
+  def self.between(beginning_time, end_time)
+    all.find_all { |sale| set_time(beginning_time) < sale.purchase_time && sale.purchase_time < set_time(end_time) }
   end
 
   def self.sort_sales
-    @best ||= all.each do |sales|
-      sales.amount_cents
-    end
-    @best
+    @best ||= all.each { |sales| sales.amount_cents}
   end
 
   def self.random
     find(rand(0..12001))
   end
 
-  def self.sales_by_vendor
+   def self.revenue_by_product
+    @product_revenue ||= @by  = {}
+    all.each do |sales|
+      if @product_revenue.include? sales.product_id
+        @product_revenue[sales.product_id]+= sales.amount_cents
+      elsif
+        @product_revenue[sales.product_id] = sales.amount_cents
+      end
+    end
+    @product_revenue.sort_by {|id, revenue|revenue/100}
+  end
+
+  def self.best_product(n)
+    revenue_by_product.last(n).reverse
+  end
+
+  def self.revenue_by_vendor
     @vendor_revenue ||= @vendor_revenue = {}
     all.each do |sales|
       if @vendor_revenue.include? sales.vendor_id
         @vendor_revenue[sales.vendor_id]+=(sales.amount_cents)
-      elsif
+      else
         @vendor_revenue[sales.vendor_id] = sales.amount_cents
       end
     end
     @vendor_revenue.sort_by {|id, revenue|revenue/100}
   end
 
-  def self.worst_sales(n)
-     sales_by_vendor.first(n)
+  def self.sales_by_vendor
+    @vendor_sales ||= @vendor_sales = {}
+    all.each do |sales|
+      if @vendor_sales.include? sales.vendor_id
+        @vendor_sales[sales.vendor_id]+=1
+      else
+        @vendor_sales[sales.vendor_id]=1
+      end
+    end
+    @vendor_sales.sort_by {|id,num|num}
   end
 
   def self.best_sales(n)
     sales_by_vendor.last(n).reverse
-   end
+  end
+        
+
+  def self.worst_sales(n)
+     revenue_by_vendor.first(n)
+  end
+
+  def self.best_sales(n)
+    revenue_by_vendor.last(n).reverse
+  end
+
+  def self.between(beginning_time,end_time)
+    all.find_all { |sale| (beginning_time.yday..end_time.yday).include? sale.purchase_time.yday }
+  end
 
 
   def self.best_day
     date_hash = {}
     all.each do |sale|
-      sale.purchase_time = sale.purchase_time.to_s[0..9]
+      sale.purchase_time = set_time(sale.purchase_time)
       if date_hash.include? sale.purchase_time
         date_hash[sale.purchase_time] += 1
-      else 
+      else
         date_hash[sale.purchase_time] = 1
       end
     end
     puts "The best day in terms of sales was #{date_hash.key(date_hash.values.max)}, when there were #{date_hash.values.max} sales."
     return date_hash.values.max
   end
-
-
-
 
   #end of class methods
 
@@ -122,6 +144,15 @@ class Sale
     Product.find(product_id)
   end
 
+private
+    #helper function for time
+  def self.set_time(time)
+    if time.is_a? String
+      time.to_date
+    else
+     time
+    end
+  end
 
-  
+
 end

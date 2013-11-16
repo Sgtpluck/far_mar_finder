@@ -24,44 +24,27 @@ class Vendor
   #end definitions for rspec
 
   def self.all
-    @all_vendors ||= CSV.read("./support/vendors.csv").map do |array|
-      Vendor.new(array)
-    end
+    @all_vendors ||= CSV.read("./support/vendors.csv").map {|array| Vendor.new(array) }
   end
 
   def self.find(id)
-    all.find do |vendor|
-      vendor.vendor_id.to_i == id.to_i
-    end
+    all.find {|vendor| vendor.vendor_id.to_i == id.to_i }
   end
 
-  #Do not need a find_all method when searching for vendor_id, since each vendor_id is unique.
-  # def self.find_all_by_vendor(id)
-  #   all.find_all do |vendor|
-  #     vendor.vendor_id.to_i == id.to_i
-  #   end
-  # end
-
    def self.find_by_market(market_id)
-    all.find_all do |vendor|
-      vendor.market_id.to_i == market_id.to_i
-    end
+    all.find_all {|vendor| vendor.market_id.to_i == market_id.to_i }
   end
 
   def self.by_market(market_id) #this method implemented to make rspec pass
-    self.find_by_market(market_id)
+    find_by_market(market_id)
   end
     
   def self.find_by_number_employees(employees)
-    all.find do |vendor|
-      vendor.number_of_employees.to_i == employees.to_i
-    end
+    all.find { |vendor| vendor.number_of_employees.to_i == employees.to_i }
   end
 
   def self.find_all_by_name(name)
-    all.find_all do |vendor|
-      vendor.name.downcase.include? name.downcase
-    end
+    all.find_all {|vendor| vendor.name.downcase.include? name.downcase }
   end
 
   def self.random
@@ -73,12 +56,11 @@ class Vendor
   end
 
   def self.returning_market_ids(name)
-    find_all_by_name(name).collect do |vendors|
-      vendors.market_id
-    end
+    find_all_by_name(name).map(&:market_id)
   end
 
-  def self.best_revenue(n)
+  #top n vendors in terms of revenue
+  def self.most_revenue(n)
     top_n_vendors = Sale.best_sales(n)
     vend = top_n_vendors.collect {|vendor_pairs| find(vendor_pairs[0]).name}
     rev = top_n_vendors.collect {|vendor_pairs| vendor_pairs[1] / 100}
@@ -87,10 +69,11 @@ class Vendor
     else
       puts "The top #{n} vendors are #{vend.join(" and ")}. They made, respectively, $#{rev.join(" and $")}"
     end
-
     return top_n_vendors
   end
 
+
+  #worst n vendors in terms of revenue
   def self.least_revenue(n)
     worst_n_vendors = Sale.worst_sales(n)
     vend = worst_n_vendors.collect {|vendor_pairs| find(vendor_pairs[0]).name}
@@ -99,6 +82,19 @@ class Vendor
       puts "The worst #{n} vendors are #{vend.join(" and ")}. They made, respectively, $#{rev.join(" and $")}"
     end
     return worst_n_vendors
+  end
+
+  # top n vendors in terms of volume of sales
+  def self.most_items(n) 
+    vend_most = Sale.best_sales(n)
+    vend = vend_most.collect {|vendor_pairs| find(vendor_pairs[0]).name}
+    num_sales = vend_most.collect {|vendor_pairs| vendor_pairs[1]}
+    if n == 1
+      puts "The top vendor in terms of sales volume is #{vend.join}, who had #{num_sales.join} sales."
+    else
+    puts "The top #{n} vendors in terms of sales volume are #{vend.join(" and ")}. They have, respectively, #{num_sales.join(" and ")} sales."
+      vend_most
+    end
   end
 
 
@@ -120,18 +116,17 @@ class Vendor
     Sale.find_by_market_id(market_id)
   end
 
-  def revenue
+  def revenue(first_date=nil,second_date=nil)
     sum = 0
-    b = Sale.all.collect do |sales|
-      sales.amount_cents
+    if first_date == nil && second_date == nil
+      Sale.find_by_vendor_id(vendor_id).collect {|sales| sales.amount_cents}.each {|cents| sum+= cents.to_i}
+    elsif first_date && second_date == nil
+        Sale.find_by_date(first_date).collect { |sales| sum+=sales.amount_cents if sales.vendor_id == vendor_id }
+    else
+      Sale.between(first_date,second_date).collect { |sales| sum+=sales.amount_cents if sales.vendor_id == vendor_id }
     end
-    b.each do |cents|
-      sum += cents.to_i
-    end
-    return sum
-  end
-
-  def preferred_vendor_by_date(date)
+    puts "$#{sum/100}"
+  return sum
   end
 
 end
